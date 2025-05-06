@@ -1,10 +1,14 @@
 import { Controller, Get, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { DownloadMusicUseCase } from '../../application/use-cases/download-music';
+import { GetMusicInfoUseCase } from '@/application/use-cases/get-music-info';
 
 @Controller('download')
 export class DownloadController {
-  constructor(private readonly downloadMusic: DownloadMusicUseCase) {}
+  constructor(
+    private readonly downloadMusic: DownloadMusicUseCase,
+    private readonly getMusicInfo: GetMusicInfoUseCase,
+  ) {}
 
   @Get('music')
   async download(@Query('url') url: string, @Res() res: Response) {
@@ -16,5 +20,11 @@ export class DownloadController {
     });
 
     stream.pipe(res);
+  }
+
+  @Get('music-info')
+  async musicInfo(@Query('url') url: string) {
+    const info = await this.getMusicInfo.execute({ url });
+    return info;
   }
 }
